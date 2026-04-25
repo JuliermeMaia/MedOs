@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyQuest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ══════════════ AUTH SCREEN ══════════════ -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="logo-icon">🎮</div>
+      <h1>StudyQuest</h1>
+      <p>Transforme seus estudos em uma aventura épica</p>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Entrar</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">Criar conta</button>
+    </div>
+    <div id="login-form">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="seu@email.com">
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="login-pass" placeholder="••••••••">
+      </div>
+      <button class="btn-primary" onclick="handleLogin()">Entrar na quest</button>
+      <p style="text-align:center;margin-top:1rem;font-size:0.8rem;color:var(--text2)">
+        Demo: use qualquer email/senha para entrar
+      </p>
+    </div>
+    <div id="register-form" style="display:none">
+      <div class="form-group">
+        <label>Nome</label>
+        <input type="text" id="reg-name" placeholder="Seu nome de aventureiro">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="reg-email" placeholder="seu@email.com">
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres">
+      </div>
+      <button class="btn-primary" onclick="handleRegister()">Começar aventura! 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MAIN APP ══════════════ -->
+<div id="app">
+  <button class="hamburger" onclick="toggleSidebar()">☰</button>
+
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-sq">🎮</div>
+        <span>StudyQuest</span>
+      </div>
+      <div class="sidebar-user">
+        <div class="user-mini">
+          <div class="user-avatar" id="sidebar-avatar">?</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-name">Carregando...</div>
+            <div class="user-level" id="sidebar-level">Nível 1</div>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-xp">
+        <div class="xp-mini-label">
+          <span id="sidebar-xp-val">0 XP</span>
+          <span id="sidebar-xp-next">próximo: 100</span>
+        </div>
+        <div class="xp-bar-mini">
+          <div class="xp-fill-mini" id="sidebar-xp-bar" style="width:0%"></div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Explorar</div>
+        <button class="nav-item active" onclick="navigate('dashboard')">
+          <span class="nav-icon">🏠</span> Dashboard
+        </button>
+        <button class="nav-item" onclick="navigate('missions')">
+          <span class="nav-icon">🎯</span> Missões
+        </button>
+        <button class="nav-item" onclick="navigate('timer')">
+          <span class="nav-icon">⏱️</span> Timer Pomodoro
+        </button>
+        <div class="nav-section-label">Progresso</div>
+        <button class="nav-item" onclick="navigate('profile')">
+          <span class="nav-icon">👤</span> Meu Perfil
+        </button>
+        <button class="nav-item" onclick="navigate('subjects')">
+          <span class="nav-icon">📚</span> Matérias
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn-secondary w-full" onclick="handleLogout()">Sair</button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- ── DASHBOARD ── -->
+      <div class="page active" id="page-dashboard">
+        <div class="topbar">
+          <div>
+            <div class="greeting" id="greeting">Bom dia, <span>Herói</span> 👋</div>
+            <div class="text-muted">Pronto para mais uma missão épica?</div>
+          </div>
+          <div class="topbar-right">
+            <div class="streak-badge">🔥 <span id="dash-streak">0</span> dias</div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid section">
+          <div class="stat-card accent">
+            <div class="stat-icon">⚡</div>
+            <div class="stat-value" id="dash-xp">0</div>
+            <div class="stat-label">XP Total</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-value" id="dash-level">1</div>
+            <div class="stat-label">Nível Atual</div>
+          </div>
+          <div class="stat-card amber">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-value" id="dash-missions">0</div>
+            <div class="stat-label">Missões Completas</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-icon">⏱️</div>
+            <div class="stat-value" id="dash-hours">0</div>
+            <div class="stat-label">Horas Estudadas</div>
+          </div>
+        </div>
+
+        <!-- XP Progress -->
+        <div class="card section">
+          <div class="section-header">
+            <span class="section-title">Progresso do Nível</span>
+            <span class="text-muted text-sm" id="dash-level-label">Nível 1</span>
+          </div>
+          <div class="xp-section">
+            <div class="xp-header">
+              <span class="xp-label" id="dash-xp-label">0 / 100 XP</span>
+              <span class="xp-value" id="dash-xp-pct">0%</span>
+            </div>
+            <div class="xp-bar">
+              <div class="xp-fill" id="dash-xp-bar" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Today's Missions -->
+        <div class="section">
+          <div class="section-header">
+            <span class="section-title">🎯 Missões de Hoje</span>
+            <button class="btn-secondary btn-sm" onclick="openMissionModal()">+ Nova missão</button>
+          </div>
+          <div class="missions-list" id="today-missions-list">
+            <div class="empty-state">
+              <div class="icon">🌟</div>
+              <h3>Nenhuma missão ainda</h3>
+              <p>Crie sua primeira missão e comece a ganhar XP!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card section">
+          <div class="section-title mb-1">📈 XP dos Últimos 7 Dias</div>
+          <div class="chart-container">
+            <div class="chart-bars" id="dash-chart"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MISSIONS ── -->
+      <div class="page" id="page-missions">
+        <div class="topbar">
+          <div>
+            <div class="page-title">🎯 Missões</div>
+            <div class="page-subtitle">Gerencie seus objetivos de estudo</div>
+          </div>
+          <button class="btn-primary btn-sm" onclick="openMissionModal()">+ Nova missão</button>
+        </div>
+
+        <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+          <button class="timer-opt active" onclick="filterMissions('all', this)">Todas</button>
+          <button class="timer-opt" onclick="filterMissions('pending', this)">Pendentes</button>
+          <button class="timer-opt" onclick="filterMissions('completed', this)">Concluídas</button>
+        </div>
+
+        <div class="missions-list" id="all-missions-list">
+          <div class="empty-state">
+            <div class="icon">🎮</div>
+            <h3>Nenhuma missão criada</h3>
+            <p>Crie sua primeira missão para começar!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TIMER ── -->
+      <div class="page" id="page-timer">
+        <div class="topbar">
+          <div>
+            <div class="page-title">⏱️ Pomodoro</div>
+            <div class="page-subtitle">Foco total, uma sessão por vez</div>
+          </div>
+        </div>
+
+        <div class="timer-card">
+          <label class="text-muted text-sm" style="display:block;margin-bottom:0.5rem;">Vincular à missão (opcional)</label>
+          <select class="timer-mission-select" id="timer-mission-select">
+            <option value="">— Sessão livre —</option>
+          </select>
+
+          <div class="timer-ring">
+            <svg class="timer-svg" viewBox="0 0 200 200">
+              <defs>
+                <linearGradient id="timerGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#7c6dfa"/>
+                  <stop offset="100%" stop-color="#f472b6"/>
+                </linearGradient>
+              </defs>
+              <circle class="timer-track" cx="100" cy="100" r="88"/>
+              <circle class="timer-progress" id="timer-circle" cx="100" cy="100" r="88"
+                stroke-dasharray="553"
+                stroke-dashoffset="0"/>
+            </svg>
+            <div class="timer-display">
+              <div class="timer-time" id="timer-display">25:00</div>
+              <div class="timer-label" id="timer-status-label">Pronto para começar</div>
+            </div>
+          </div>
+
+          <div class="timer-controls">
+            <button class="btn-timer btn-timer-secondary" onclick="resetTimer()" title="Resetar">↺</button>
+            <button class="btn-timer btn-timer-main" onclick="toggleTimer()" id="timer-play-btn">▶</button>
+            <button class="btn-timer btn-timer-secondary" onclick="skipTimer()" title="Pular">⏭</button>
+          </div>
+
+          <div class="timer-options">
+            <button class="timer-opt active" onclick="setTimerDuration(25, this)">25 min</button>
+            <button class="timer-opt" onclick="setTimerDuration(40, this)">40 min</button>
+            <button class="timer-opt" onclick="setTimerDuration(50, this)">50 min</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:1.5rem;">
+          <div class="section-title mb-1">📋 Sessões Recentes</div>
+          <div id="sessions-list">
+            <p class="text-muted text-sm">Nenhuma sessão ainda</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PROFILE ── -->
+      <div class="page" id="page-profile">
+        <div class="topbar">
+          <div>
+            <div class="page-title">👤 Perfil</div>
+            <div class="page-subtitle">Sua jornada como aventureiro</div>
+          </div>
+        </div>
+
+        <div class="profile-hero">
+          <div class="profile-avatar-large" id="profile-avatar">?</div>
+          <div class="profile-info">
+            <div class="profile-name" id="profile-name">Herói</div>
+            <div class="profile-level" id="profile-level-text">⚔️ Nível 1 · Aprendiz</div>
+            <div class="xp-section" style="margin-top:0.75rem;">
+              <div class="xp-header">
+                <span class="xp-label" id="profile-xp-label">0 / 100 XP</span>
+                <span class="xp-value" id="profile-xp-pct">0%</span>
+              </div>
+              <div class="xp-bar">
+                <div class="xp-fill" id="profile-xp-bar" style="width:0%"></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:1rem;margin-top:0.75rem;flex-wrap:wrap;">
+              <div class="streak-badge">🔥 <span id="profile-streak">0</span> dias streak</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid section">
+          <div class="stat-card accent">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-value" id="prof-missions">0</div>
+            <div class="stat-label">Missões Completas</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-icon">⏱️</div>
+            <div class="stat-value" id="prof-hours">0h</div>
+            <div class="stat-label">Horas Estudadas</div>
+          </div>
+          <div class="stat-card amber">
+            <div class="stat-icon">📅</div>
+            <div class="stat-value" id="prof-week-xp">0</div>
+            <div class="stat-label">XP esta semana</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-icon">🗓️</div>
+            <div class="stat-value" id="prof-month-xp">0</div>
+            <div class="stat-label">XP este mês</div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="card section">
+          <div class="section-title mb-1">📈 XP por Dia (últimos 7 dias)</div>
+          <div class="chart-container">
+            <div class="chart-bars" id="profile-chart"></div>
+          </div>
+        </div>
+
+        <!-- Achievements -->
+        <div class="card section">
+          <div class="section-title" style="margin-bottom:1rem;">🏆 Conquistas</div>
+          <div class="achievements-grid" id="achievements-grid"></div>
+        </div>
+      </div>
+
+      <!-- ── SUBJECTS ── -->
+      <div class="page" id="page-subjects">
+        <div class="topbar">
+          <div>
+            <div class="page-title">📚 Matérias</div>
+            <div class="page-subtitle">Acompanhe seu domínio por disciplina</div>
+          </div>
+          <button class="btn-primary btn-sm" onclick="openSubjectModal()">+ Matéria</button>
+        </div>
+
+        <div class="card section" id="subjects-list-card">
+          <div id="subjects-list">
+            <div class="empty-state">
+              <div class="icon">📖</div>
+              <h3>Nenhuma matéria cadastrada</h3>
+              <p>Adicione suas disciplinas para acompanhar o progresso</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title" style="margin-bottom:1rem;">➕ Adicionar Tópico</div>
+          <div class="form-group">
+            <label>Matéria</label>
+            <select id="topic-subject-select" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.65rem 1rem;color:var(--text);font-family:var(--font);font-size:0.9rem;outline:none;">
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nome do tópico</label>
+              <input type="text" id="topic-name" placeholder="Ex: Equações diferenciais">
+            </div>
+            <div class="form-group">
+              <label>Domínio (0–5)</label>
+              <input type="number" id="topic-mastery" min="0" max="5" value="0" placeholder="0">
+            </div>
+          </div>
+          <button class="btn-primary btn-sm" onclick="addTopic()">Adicionar Tópico</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Mobile Nav -->
+  <nav class="mobile-nav">
+    <div class="mobile-nav-items">
+      <button class="mobile-nav-btn active" onclick="navigate('dashboard', this)">
+        <span class="icon">🏠</span>Dashboard
+      </button>
+      <button class="mobile-nav-btn" onclick="navigate('missions', this)">
+        <span class="icon">🎯</span>Missões
+      </button>
+      <button class="mobile-nav-btn" onclick="navigate('timer', this)">
+        <span class="icon">⏱️</span>Timer
+      </button>
+      <button class="mobile-nav-btn" onclick="navigate('profile', this)">
+        <span class="icon">👤</span>Perfil
+      </button>
+    </div>
+  </nav>
+</div>
+
+<!-- ══════════════ MODALS ══════════════ -->
+
+<!-- Mission Modal -->
+<div class="modal-overlay" id="mission-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🎯 Nova Missão</div>
+      <button class="modal-close" onclick="closeModal('mission-modal')">✕</button>
+    </div>
+    <div class="form-group">
+      <label>Título da missão</label>
+      <input type="text" id="m-title" placeholder="Ex: Resolver 20 questões de Física">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Tipo</label>
+        <select id="m-type">
+          <option value="Teoria">📖 Teoria</option>
+          <option value="Questões">✏️ Questões</option>
+          <option value="Revisão">🔄 Revisão</option>
+          <option value="Prática">⚗️ Prática</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Dificuldade</label>
+        <select id="m-diff">
+          <option value="easy">🟢 Fácil (+10 XP)</option>
+          <option value="medium" selected>🟡 Médio (+20 XP)</option>
+          <option value="hard">🔴 Difícil (+30 XP)</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Duração (minutos)</label>
+        <input type="number" id="m-duration" value="30" min="5" max="180">
+      </div>
+      <div class="form-group">
+        <label>Data</label>
+        <input type="date" id="m-date">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Matéria (opcional)</label>
+      <select id="m-subject">
+        <option value="">— Nenhuma —</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" style="flex:1" onclick="closeModal('mission-modal')">Cancelar</button>
+      <button class="btn-primary" style="flex:2" onclick="saveMission()">Criar Missão 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- Subject Modal -->
+<div class="modal-overlay" id="subject-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📚 Nova Matéria</div>
+      <button class="modal-close" onclick="closeModal('subject-modal')">✕</button>
+    </div>
+    <div class="form-group">
+      <label>Nome da matéria</label>
+      <input type="text" id="s-name" placeholder="Ex: Matemática, Física, Inglês...">
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" style="flex:1" onclick="closeModal('subject-modal')">Cancelar</button>
+      <button class="btn-primary" style="flex:2" onclick="saveSubject()">Adicionar 📚</button>
+    </div>
+  </div>
+</div>
+
+<!-- Level Up Overlay -->
+<div class="levelup-overlay" id="levelup-overlay">
+  <div class="levelup-card">
+    <div class="levelup-icon">🏆</div>
+    <h2>Level Up!</h2>
+    <h1 id="levelup-text">Nível 2</h1>
+    <p class="text-muted" style="margin-bottom:1.5rem;">Você está evoluindo! Continue assim!</p>
+    <button class="btn-primary" onclick="document.getElementById('levelup-overlay').classList.remove('open')">Continuar aventura! ⚔️</button>
+  </div>
+</div>
+
+<!-- Notif Container -->
+<div class="notif-container" id="notif-container"></div>
+
+<!-- Particles Canvas -->
+<canvas class="particles" id="particles"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
